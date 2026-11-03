@@ -1,0 +1,8 @@
+{
+    "name": "M3U Player",
+    "description": "M3U / M3U8 playlist player plugin for CloudStream",
+    "manifestVersion": 1,
+    "pluginLists": [
+      "https://raw.githubusercontent.com/drogitasxd183/cloudstream-m3u/builds/plugins.json"
+    ]
+}
