@@ -19,8 +19,6 @@ import com.lagradost.cloudstream3.newMovieLoadResponse
 import com.lagradost.cloudstream3.newMovieSearchResponse
 import com.lagradost.cloudstream3.newTvSeriesLoadResponse
 import com.lagradost.cloudstream3.newTvSeriesSearchResponse
-import com.lagradost.cloudstream3.utils.AppUtils.toJson
-import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
@@ -29,34 +27,12 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
 
-private const val KIND_LIVE = "live"
-private const val KIND_VOD = "vod"
-private const val KIND_SERIES = "series"
-private const val KIND_INFO = "info"
-
 /** Placeholder `MainPageData.data` used while no playlist is configured. */
 private const val SETUP_DATA = "m3u://setup"
 
 private const val CACHE_MILLIS = 10 * 60 * 1000L
 private const val REQUEST_TIMEOUT_SECONDS = 60L
 private const val MAX_SEARCH_RESULTS = 200
-
-/**
- * Everything needed to play an entry. It is stored (as JSON) in the `url` / `data` strings
- * that CloudStream passes around, so favourites, history and "continue watching" keep working
- * even after the app restarts or the playlist changes.
- */
-data class ItemRef(
-    val name: String = "",
-    val url: String = "",
-    val logo: String? = null,
-    val group: String? = null,
-    val headers: Map<String, String> = emptyMap(),
-    val kind: String = KIND_LIVE,
-    val info: String? = null,
-    /** Playlist the entry comes from (used to find all episodes of a series). */
-    val source: String? = null,
-)
 
 class M3uProvider(private val store: M3uStore) : MainAPI() {
 
@@ -216,7 +192,7 @@ class M3uProvider(private val store: M3uStore) : MainAPI() {
     // ---------------------------------------------------------------------------------------
 
     override suspend fun load(url: String): LoadResponse? {
-        val ref = tryParseJson<ItemRef>(url)
+        val ref = ItemRef.decode(url)
             ?: throw ErrorLoadingException(tr("Entrada no válida", "Invalid entry"))
 
         return when (ref.kind) {
@@ -267,7 +243,7 @@ class M3uProvider(private val store: M3uStore) : MainAPI() {
                 group = entry.group,
                 headers = entry.headers,
                 kind = KIND_VOD,
-            ).toJson()
+            ).encode()
             val episodeTitle = info.title ?: tr("Episodio ${info.episode}", "Episode ${info.episode}")
             val poster = entry.logo
             newEpisode(data) {
@@ -291,7 +267,7 @@ class M3uProvider(private val store: M3uStore) : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val ref = tryParseJson<ItemRef>(data) ?: return false
+        val ref = ItemRef.decode(data) ?: return false
         if (ref.kind == KIND_INFO || ref.url.isBlank()) return false
 
         val streamReferer = ref.headers.entries
@@ -336,7 +312,7 @@ class M3uProvider(private val store: M3uStore) : MainAPI() {
                 group = entry.group,
                 kind = KIND_SERIES,
                 source = source,
-            ).toJson()
+            ).encode()
             val seriesPoster = entry.logo
             return newTvSeriesSearchResponse(episode.series, seriesData, TvType.TvSeries, fix = false) {
                 posterUrl = seriesPoster
@@ -351,7 +327,7 @@ class M3uProvider(private val store: M3uStore) : MainAPI() {
             group = entry.group,
             headers = entry.headers,
             kind = if (isVod) KIND_VOD else KIND_LIVE,
-        ).toJson()
+        ).encode()
         val poster = entry.logo
 
         // fix = false: `data` is JSON, not a URL relative to mainUrl.
@@ -363,7 +339,7 @@ class M3uProvider(private val store: M3uStore) : MainAPI() {
     }
 
     private fun infoItem(title: String, details: String): SearchResponse {
-        val data = ItemRef(name = title, kind = KIND_INFO, info = details).toJson()
+        val data = ItemRef(name = title, kind = KIND_INFO, info = details).encode()
         return newLiveSearchResponse(title, data, TvType.Live, fix = false)
     }
 

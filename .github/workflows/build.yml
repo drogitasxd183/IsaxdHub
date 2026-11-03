@@ -62,10 +62,20 @@ jobs:
 
       - name: Build Plugins
         run: |
-          set -o pipefail
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
-          ./gradlew make makePluginsJson --stacktrace 2>&1 | tee $GITHUB_WORKSPACE/build-log.txt
+          # JitPack builds some dependencies on demand, so the first request can fail: retry a few times.
+          for attempt in 1 2 3; do
+            if ./gradlew make makePluginsJson; then
+              break
+            fi
+            if [ "$attempt" = 3 ]; then
+              echo "Gradle failed 3 times"
+              exit 1
+            fi
+            echo "Gradle failed (attempt $attempt), retrying in 60 seconds..."
+            sleep 60
+          done
           cp **/build/*.cs3 $GITHUB_WORKSPACE/builds
           cp build/plugins.json $GITHUB_WORKSPACE/builds
 
@@ -77,25 +87,3 @@ jobs:
           git add .
           git commit --amend -m "Build $GITHUB_SHA" || exit 0   # do not error if nothing to commit
           git push --force
-
-      # Debug aid: publishes the Gradle output to the "build-logs" branch (GitHub's own log
-      # download is not reachable from every environment). Safe to delete once builds are stable.
-      - name: Publish build log
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p /tmp/logs && cd /tmp/logs
-          {
-            echo "== os"; head -3 /etc/os-release
-            echo "== java"; java -version 2>&1
-            echo "== android"; echo "ANDROID_HOME=$ANDROID_HOME"; ls "$ANDROID_HOME" 2>&1 | head -20
-            echo "== platforms"; ls "$ANDROID_HOME/platforms" 2>&1 | head -20
-          } > env.txt 2>&1
-          cp "$GITHUB_WORKSPACE/build-log.txt" . 2>/dev/null || true
-          git init -q -b build-logs
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-          git add .
-          git commit -q -m "Build log for $GITHUB_SHA"
-          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" build-logs

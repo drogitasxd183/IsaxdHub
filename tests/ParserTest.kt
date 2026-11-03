@@ -128,6 +128,33 @@ fun main() {
     check("series without S/E in title stays a normal entry", M3uParser.episodeInfo(entry("Some Documentary", "http://h/series/u/p/1.mkv")) == null)
     check("seriesKey ignores case and spacing", M3uParser.seriesKey("Breaking   Bad") == M3uParser.seriesKey(" breaking bad "))
 
+
+    println("ItemRef json codec")
+    val ref = ItemRef(
+        name = "Canal \"Uno\" \\ \u00f1and\u00fa \uD83D\uDCFA", url = "http://h/x?a=b&c=d|User-Agent=V",
+        logo = "http://i/x.png", group = "Noticias, mundo",
+        headers = mapOf("User-Agent" to "My/1.0 (X; Y)", "Referer" to "http://r/"),
+        kind = KIND_VOD, info = "line1\nline2\ttab", source = "https://list/a.m3u|User-Agent=VLC",
+    )
+    val json = ref.encode()
+    check("starts with {\"name\": (fixUrl-safe)", json.startsWith("{\"name\":"), json)
+    check("round trip with quotes, backslash, unicode, emoji, newline", ItemRef.decode(json) == ref, json)
+    check("minimal round trip", ItemRef(name = "x").let { ItemRef.decode(it.encode()) == it })
+    check("series ref round trip", ItemRef(name = "Show", kind = KIND_SERIES, source = "s").let { ItemRef.decode(it.encode()) == it })
+    check("control chars escaped and restored", ItemRef(name = "a\u0001b\u001fc").let { ItemRef.decode(it.encode()) == it && it.encode().none { c -> c < ' ' } })
+    check("\\u escapes decode", ItemRef.decode("{\"name\":\"\\u00f1\\u00e1\\ud83d\\udcfa\"}")?.name == "\u00f1\u00e1\uD83D\uDCFA")
+    check("unknown keys and value types are ignored", ItemRef.decode("{\"name\":\"a\",\"x\":[1,2,{\"y\":null}],\"z\":true,\"n\":1.5e3,\"kind\":\"vod\"}")?.kind == "vod")
+    check("missing fields get defaults", ItemRef.decode("{\"name\":\"a\"}") == ItemRef(name = "a"))
+    check("non-string header values are skipped", ItemRef.decode("{\"name\":\"a\",\"headers\":{\"k\":1,\"u\":\"v\"}}")?.headers == mapOf("u" to "v"))
+    check("garbage -> null", ItemRef.decode("not json") == null && ItemRef.decode("") == null && ItemRef.decode(null) == null &&
+        ItemRef.decode("[1,2]") == null && ItemRef.decode("{\"name\":") == null && ItemRef.decode("{\"name\":\"a\"} x") == null)
+    check("deep nesting -> null without crashing", ItemRef.decode("[".repeat(10000)) == null)
+    val t1 = System.nanoTime()
+    var ok = 0
+    for (i in 1..100_000) { if (ItemRef.decode(ItemRef(name = "Channel $i", url = "http://s/$i.ts", group = "G${i % 150}").encode())?.name == "Channel $i") ok++ }
+    check("100k encode+decode", ok == 100_000)
+    println("   100k encode+decode in ${(System.nanoTime() - t1) / 1_000_000} ms")
+
     println("edge cases")
     check("empty text", M3uParser.parse("").isEmpty())
     check("only header", M3uParser.parse("#EXTM3U\n").isEmpty())

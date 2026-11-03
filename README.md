@@ -97,11 +97,11 @@ Abre una terminal **dentro de esa carpeta** (Windows: clic derecho en un espacio
 git config --global user.name "Tu Nombre"
 git config --global user.email "tu-correo@ejemplo.com"
 
-git init -b master
+git init -b main
 git add .
 git commit -m "M3U Player plugin"
 git remote add origin https://github.com/TU_USUARIO/cloudstream-m3u.git
-git push -u origin master
+git push -u origin main
 ```
 
 - Los avisos *LF will be replaced by CRLF* que salen en Windows son normales.
@@ -123,7 +123,7 @@ Si sale una ❌ roja, abre la ejecución, pulsa el paso que falló y copia el me
 3. *Nombre*: `M3U Player`. *URL*:
 
 ```
-https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/master/repo.json
+https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/main/repo.json
 ```
 
 4. Abre el repositorio recién agregado, busca **M3U Player** y pulsa el botón de descarga. Acepta el aviso sobre repositorios de terceros.
@@ -189,11 +189,12 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 
 | Problema | Solución |
 |---|---|
-| El workflow falla en *Create the builds branch* o en *Checkout builds* | Crea la rama `builds` a mano con estos comandos (en la carpeta del proyecto) y en *Actions* pulsa **Re-run all jobs**: `git checkout --orphan builds`, `git rm -rf .`, `git commit --allow-empty -m init`, `git push -u origin builds`, `git checkout master`. |
+| El workflow falla en *Create the builds branch* o en *Checkout builds* | Crea la rama `builds` a mano con estos comandos (en la carpeta del proyecto) y en *Actions* pulsa **Re-run all jobs**: `git checkout --orphan builds`, `git rm -rf .`, `git commit --allow-empty -m init`, `git push -u origin builds`, `git checkout main`. |
 | El workflow falla en *Push builds* con error 403 | *Settings → Actions → General → Workflow permissions* → **Read and write permissions** → *Save*, y vuelve a ejecutarlo. |
 | `git push` rechaza el archivo de workflow | El token necesita el permiso `workflow` (ver paso 5). |
-| CloudStream dice que la URL del repositorio no es válida | El repositorio debe ser **público** y la URL debe ser la de `raw.githubusercontent.com/.../master/repo.json`. Ábrela en el navegador: debe mostrar el JSON. |
+| CloudStream dice que la URL del repositorio no es válida | El repositorio debe ser **público** y la URL debe ser la de `raw.githubusercontent.com/.../main/repo.json`. Ábrela en el navegador: debe mostrar el JSON. |
 | El repositorio carga pero está vacío | Abre `https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json` en el navegador. Si da 404, el workflow no terminó bien. |
+| El workflow falla con `Could not find com.github.recloudstream...` | JitPack compila esas librerías bajo demanda y la primera petición puede fallar. El workflow ya reintenta solo 3 veces; si aun así falla, en *Actions* pulsa **Re-run all jobs** pasados unos minutos. |
 | Local: `SDK location not found` | Crea `local.properties` (paso 3 de la opción B) o define la variable `ANDROID_HOME`. |
 | Local: `Could not resolve com.github.recloudstream...` | JitPack compila esas librerías bajo demanda; espera unos minutos y repite el comando. |
 | Local: error de versión de Java | Usa JDK 17 (`java -version`). |
@@ -203,6 +204,7 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | Archivo | Qué contiene |
 |---|---|
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uParser.kt` | Parser de M3U y detección de series en Kotlin puro (sin Android ni CloudStream) |
+| `M3uPlayer/src/main/kotlin/recloudstream/ItemRef.kt` | Datos de cada canal/serie guardados como JSON, con un codificador propio sin reflexión |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uProvider.kt` | El proveedor: inicio por grupos, búsqueda, fichas, series y reproducción |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uSettings.kt` | Diálogo de ajustes y almacenamiento de las listas |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uPlugin.kt` | Punto de entrada del plugin |
@@ -212,7 +214,7 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 Probar el parser:
 
 ```
-kotlinc M3uPlayer/src/main/kotlin/recloudstream/M3uParser.kt tests/ParserTest.kt -include-runtime -d parser-test.jar
+kotlinc M3uPlayer/src/main/kotlin/recloudstream/M3uParser.kt M3uPlayer/src/main/kotlin/recloudstream/ItemRef.kt tests/ParserTest.kt -include-runtime -d parser-test.jar
 java -jar parser-test.jar
 ```
 
