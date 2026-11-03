@@ -1,0 +1,44 @@
+[
+    {
+        "iconUrl": "https://raw.githubusercontent.com/drogitasxd183/IsaxdHub/main/icon.png",
+        "fileHash": "sha256-80f200080941aac24ded7cf81da8d08bc6a8b1c43dfddc976aa62b4ec4e2abeb",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/drogitasxd183/IsaxdHub",
+        "fileSize": 39474,
+        "status": 1,
+        "authors": [
+            "drogitasxd183"
+        ],
+        "tvTypes": [
+            "Live",
+            "Movie",
+            "TvSeries"
+        ],
+        "version": 2,
+        "internalName": "M3uPlayer",
+        "description": "Reproduce listas M3U / M3U8 (IPTV) a partir de tus propias URLs | Plays M3U / M3U8 (IPTV) playlists from your own URLs",
+        "url": "https://raw.githubusercontent.com/drogitasxd183/IsaxdHub/builds/M3uPlayer.cs3",
+        "name": "M3uPlayer"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/drogitasxd183/IsaxdHub/main/icon-xtream.png",
+        "fileHash": "sha256-87938c444d267b533dc1288eea445c0f492cd2c1861cc82ead6302170b7c8c44",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/drogitasxd183/IsaxdHub",
+        "fileSize": 75164,
+        "status": 1,
+        "authors": [
+            "drogitasxd183"
+        ],
+        "tvTypes": [
+            "Live",
+            "Movie",
+            "TvSeries"
+        ],
+        "version": 2,
+        "internalName": "XtreamPlayer",
+        "description": "Reproduce listas Xtream Codes: TV en vivo, pel\u00edculas y series | Plays Xtream Codes lists: live TV, movies and series",
+        "url": "https://raw.githubusercontent.com/drogitasxd183/IsaxdHub/builds/XtreamPlayer.cs3",
+        "name": "XtreamPlayer"
+    }
+]
