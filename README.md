@@ -1,3 +1,6 @@
+<p align="center"><img src="icon.png" width="128" alt="M3U Player"></p>
+<p align="center"><b>Español</b> · <a href="README.en.md">English</a></p>
+
 # M3U Player — plugin de CloudStream
 
 Plugin para [CloudStream](https://github.com/recloudstream/cloudstream) que reproduce **listas M3U / M3U8 (IPTV)** a partir de las URLs que tú configures.
@@ -15,6 +18,7 @@ No incluye ningún canal ni fuente: tú aportas tu propia lista (úsala solo con
 - Cabeceras HTTP por canal: `#EXTVLCOPT:http-user-agent` / `http-referrer`, `#EXTHTTP:{...}`, `#KODIPROP:inputstream.adaptive.stream_headers` y el sufijo estilo Kodi `url|User-Agent=VLC&Referer=https://sitio`.
 - Lee `tvg-id`, `tvg-name`, `tvg-logo`, `group-title`, `#EXTGRP`, rutas relativas, BOM y saltos de línea CRLF. Las listas se descargan sin el límite de 5 MB y el parser procesa 100 000 entradas en ~1 segundo.
 - Si la URL que configuras es directamente un stream HLS (no una lista de canales), la reproduce tal cual.
+- Las pantallas y mensajes del propio plugin están en español e inglés, según el idioma del teléfono.
 
 ### Cómo se detectan las series
 
@@ -79,15 +83,15 @@ git --version
 
 Descomprime `cloudstream-m3u-player.zip`. Entra hasta la carpeta que contiene directamente el archivo `build.gradle.kts` (si al descomprimir se creó una carpeta dentro de otra, es la de más adentro).
 
-### 4. Edita `repo.json`
+### 4. Edita `repo.json` y `iconUrl`
 
-Abre `repo.json` con el Bloc de notas y reemplaza **`YOUR_USER/YOUR_REPO`** por tu usuario y repositorio. Ejemplo:
+1. Abre `repo.json` con el Bloc de notas y reemplaza **`YOUR_USER/YOUR_REPO`** por tu usuario y repositorio. Ejemplo:
 
-```json
-"https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json"
-```
+   ```json
+   "https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json"
+   ```
 
-Guarda el archivo.
+2. Abre `M3uPlayer/build.gradle.kts` y haz lo mismo en la línea `iconUrl` (ver *Cambiar el icono* más abajo). Guarda ambos archivos.
 
 ### 5. Sube el proyecto a GitHub
 
@@ -138,6 +142,16 @@ Vuelve al inicio, elige el proveedor **M3U Player**, toca el engranaje y pega tu
 2. Sube el número de `version = 1` a `version = 2` en `M3uPlayer/build.gradle.kts`. **Sin este cambio CloudStream no detecta la actualización.**
 3. En la terminal: `git add .`, `git commit -m "cambios"`, `git push`.
 4. Espera el ✔ verde en *Actions* y actualiza el plugin desde *Ajustes → Extensiones*.
+
+### Cambiar el icono
+
+CloudStream carga el icono del plugin desde una **URL pública de imagen** (`iconUrl` en `M3uPlayer/build.gradle.kts`). Lo más cómodo es guardar la imagen en este mismo repositorio:
+
+1. Reemplaza `icon.png` por tu propio PNG cuadrado (se recomienda 512×512). Conserva el nombre del archivo, o cambia `iconUrl` si lo modificas.
+2. Sube `version` en uno y guarda los cambios, como en *Actualizar el plugin más adelante*.
+3. Actualiza el plugin en CloudStream. El icono solo cambia tras la actualización, y GitHub puede tardar unos minutos en refrescar la imagen.
+
+Si prefieres una imagen alojada en otro sitio, pon en `iconUrl` su enlace **directo** (uno que termine en `.png` / `.jpg` y que abra la imagen, no una página web).
 
 ## Opción B — Compilar en tu PC
 
@@ -195,6 +209,7 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | CloudStream dice que la URL del repositorio no es válida | El repositorio debe ser **público** y la URL debe ser la de `raw.githubusercontent.com/.../main/repo.json`. Ábrela en el navegador: debe mostrar el JSON. |
 | El repositorio carga pero está vacío | Abre `https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json` en el navegador. Si da 404, el workflow no terminó bien. |
 | El workflow falla con `Could not find com.github.recloudstream...` | JitPack compila esas librerías bajo demanda y la primera petición puede fallar. El workflow ya reintenta solo 3 veces; si aun así falla, en *Actions* pulsa **Re-run all jobs** pasados unos minutos. |
+| El icono nuevo no aparece | Sube `version`, haz push, espera el ✔ verde y actualiza el plugin en CloudStream (o quítalo y vuelve a instalarlo). |
 | Local: `SDK location not found` | Crea `local.properties` (paso 3 de la opción B) o define la variable `ANDROID_HOME`. |
 | Local: `Could not resolve com.github.recloudstream...` | JitPack compila esas librerías bajo demanda; espera unos minutos y repite el comando. |
 | Local: error de versión de Java | Usa JDK 17 (`java -version`). |
@@ -208,6 +223,8 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uProvider.kt` | El proveedor: inicio por grupos, búsqueda, fichas, series y reproducción |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uSettings.kt` | Diálogo de ajustes y almacenamiento de las listas |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uPlugin.kt` | Punto de entrada del plugin |
+| `M3uPlayer/build.gradle.kts` | Versión, descripción, tipos e icono del plugin |
+| `icon.png` | Icono del plugin (512×512), referenciado por `iconUrl` |
 | `.github/workflows/build.yml` | Compilación automática en GitHub Actions |
 | `tests/ParserTest.kt` | Pruebas del parser (se ejecutan en cualquier JVM) |
 

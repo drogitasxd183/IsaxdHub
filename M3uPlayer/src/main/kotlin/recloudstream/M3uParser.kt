@@ -402,6 +402,6 @@ object M3uParser {
         }
         if (!host.isNullOrBlank()) return host
         val file = displayNameFromUrl(clean)
-        return if (file == "Stream") "Lista $index" else file
+        return if (file == "Stream") "Playlist $index" else file
     }
 }
