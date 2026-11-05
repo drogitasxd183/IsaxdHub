@@ -1,12 +1,18 @@
-<p align="center"><img src="icon.png" width="128" alt="M3U Player"></p>
+<p align="center"><img src="icon.png" width="112" alt="M3U Player"> &nbsp; <img src="icon-xtream.png" width="112" alt="Xtream Player"></p>
 <p align="center"><b>Español</b> · <a href="README.en.md">English</a></p>
 
-# M3U Player — plugin de CloudStream
+# M3U Player y Xtream Player — plugins de CloudStream
 
-Plugin para [CloudStream](https://github.com/recloudstream/cloudstream) que reproduce **listas M3U / M3U8 (IPTV)** a partir de las URLs que tú configures.
-No incluye ningún canal ni fuente: tú aportas tu propia lista (úsala solo con contenido que tengas derecho a ver).
+Dos plugins para [CloudStream](https://github.com/recloudstream/cloudstream) en un mismo repositorio:
 
-## Qué hace
+| Plugin | Para qué sirve |
+|---|---|
+| **M3U Player** | Reproduce **listas M3U / M3U8 (IPTV)** a partir de las URLs que configures. |
+| **Xtream Player** | Se conecta a una cuenta **Xtream Codes** (servidor, usuario y contraseña) y separa canales, películas y series. |
+
+Ninguno incluye canales ni fuentes: tú aportas tu propia lista o cuenta (úsalos solo con contenido que tengas derecho a ver).
+
+## M3U Player — qué hace
 
 - Una o varias listas M3U (URL `http(s)` o archivo local), cada una con su nombre.
 - En el inicio muestra **una fila por grupo** (`group-title`) con el logo de cada canal (`tvg-logo`). Buscador por nombre o por grupo (hasta 200 resultados).
@@ -30,7 +36,7 @@ Una entrada se considera **episodio** cuando se cumplen las dos condiciones:
 El nombre de la serie es el texto que va **antes** de la marca de temporada/episodio (`Breaking Bad - S02 E10 - Pilot` → serie «Breaking Bad», temporada 2, episodio 10, título «Pilot»). Todos los episodios con el mismo nombre dentro de la misma lista forman una sola ficha, ordenados por temporada y episodio.
 Si los títulos de tu lista no llevan temporada y episodio, esas entradas se verán como películas.
 
-## Configuración dentro de CloudStream
+## M3U Player — configuración dentro de CloudStream
 
 1. Abre el proveedor **M3U Player** en el inicio.
 2. Toca el **engranaje** junto al nombre del proveedor (o *Ajustes → Extensiones → M3U Player → Ajustes*).
@@ -47,6 +53,45 @@ https://servidor.ejemplo/lista.m3u|User-Agent=VLC
 4. Vuelve a abrir el proveedor para recargar los canales. Las listas se guardan en memoria 10 minutos.
 
 > En Android TV CloudStream no muestra el engranaje del inicio; usa la ruta de *Ajustes → Extensiones*.
+
+## Xtream Player
+
+Se conecta a una cuenta **Xtream Codes** (el formato `player_api.php` que usan muchos paneles IPTV). El panel entrega por separado los canales, las películas y las series, así que el plugin **sabe exactamente qué es cada cosa**: no adivina por el nombre ni por la URL. No necesita ninguna clave de API (tampoco de TMDb): las carátulas, sinopsis y demás datos los entrega el propio panel.
+
+### Qué hace
+
+- **TV en vivo, Películas y Series** como secciones separadas (puedes activar solo las que quieras), con **una fila por categoría** del panel.
+- Dentro de cada categoría, películas y series aparecen **de más nuevas a más antiguas**; los canales conservan el orden del panel.
+- **Ficha completa** de películas y series con lo que entregue el panel: carátula, imagen de fondo, sinopsis, año, géneros, reparto, director, duración, puntuación, tráiler y TMDb ID.
+- Series con **temporadas y episodios** (título, imagen, sinopsis y duración de cada episodio).
+- **Buscador** en canales, películas y series de todas tus cuentas; ignora mayúsculas y acentos.
+- Varias cuentas a la vez. Si una falla, las demás siguen funcionando.
+- Canales en vivo por **HLS (m3u8)** si el panel lo permite, o **TS**; puedes forzar TS en los ajustes.
+- Catálogos enormes: las listas se leen en flujo y solo se guarda lo necesario (en las pruebas, 200 000 entradas en unos 2 segundos en un PC). Se mantienen en memoria 15 minutos.
+- Los textos del plugin salen en español o inglés según el idioma del teléfono.
+
+### Configuración
+
+1. Abre el proveedor **Xtream Player** en el inicio y toca el **engranaje** (o *Ajustes → Extensiones → Xtream Player → Ajustes*).
+2. Escribe una cuenta por línea, en cualquiera de estas formas:
+
+```
+Mi proveedor | http://servidor:8080 | usuario | contraseña
+http://servidor:8080 | usuario | contraseña
+http://servidor:8080/get.php?username=USUARIO&password=CLAVE&type=m3u_plus
+# las líneas que empiezan con # se ignoran
+```
+
+   La tercera forma es el enlace M3U que suele dar el proveedor: el plugin extrae de él el servidor, el usuario y la contraseña (no descarga esa lista M3U; usa la API Xtream).
+3. Ajustes opcionales:
+   - **Secciones**: marca solo las que quieras ver. Cada sección activada descarga su catálogo al abrir el inicio.
+   - **Filtro de categorías**: palabras separadas por coma; solo se muestran las categorías cuyo nombre contenga alguna (ignora mayúsculas y acentos), y con `-` se excluyen. Ejemplo: `LATINO, ES, -ADULTOS`. Úsalo si tu panel tiene cientos de categorías: el inicio muestra como máximo 60 filas por sección y 120 elementos por fila (el resto se encuentra con el buscador).
+   - **User-Agent**: algunos proveedores solo responden a ciertos clientes (por ejemplo `VLC/3.0.20 LibVLC/3.0.20`).
+   - **Usar TS en vez de HLS**: para los canales en vivo.
+4. Pulsa **Probar conexión** para comprobar cada cuenta antes de guardar: muestra el estado, la fecha de vencimiento, las conexiones en uso y los formatos de salida permitidos.
+5. Pulsa **Guardar** y vuelve a abrir el proveedor.
+
+Cómo se reproduce cada cosa: los canales con `servidor/live/usuario/clave/ID.m3u8` (o `.ts`), las películas con `servidor/movie/usuario/clave/ID.extensión` y los episodios con `servidor/series/usuario/clave/ID.extensión`. Los favoritos y el historial guardan una referencia a la cuenta (servidor y usuario), no la contraseña.
 
 ---
 
@@ -91,7 +136,7 @@ Descomprime `cloudstream-m3u-player.zip`. Entra hasta la carpeta que contiene di
    "https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json"
    ```
 
-2. Abre `M3uPlayer/build.gradle.kts` y haz lo mismo en la línea `iconUrl` (ver *Cambiar el icono* más abajo). Guarda ambos archivos.
+2. Abre `M3uPlayer/build.gradle.kts` y `XtreamPlayer/build.gradle.kts` y haz lo mismo en la línea `iconUrl` de cada uno (ver *Cambiar el icono* más abajo). Guarda los tres archivos.
 
 ### 5. Sube el proyecto a GitHub
 
@@ -130,24 +175,24 @@ Si sale una ❌ roja, abre la ejecución, pulsa el paso que falló y copia el me
 https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/main/repo.json
 ```
 
-4. Abre el repositorio recién agregado, busca **M3U Player** y pulsa el botón de descarga. Acepta el aviso sobre repositorios de terceros.
+4. Abre el repositorio recién agregado y descarga **M3U Player**, **Xtream Player** o ambos (cada uno tiene su botón de descarga). Acepta el aviso sobre repositorios de terceros.
 
-### 8. Configura tus listas
+### 8. Configura tus listas o tu cuenta
 
-Vuelve al inicio, elige el proveedor **M3U Player**, toca el engranaje y pega tus listas (ver *Configuración dentro de CloudStream*).
+Vuelve al inicio, elige el proveedor (**M3U Player** o **Xtream Player**), toca el engranaje y rellena los ajustes (ver *M3U Player — configuración* y *Xtream Player*).
 
 ### Actualizar el plugin más adelante
 
 1. Cambia lo que quieras en el código.
-2. Sube el número de `version = 1` a `version = 2` en `M3uPlayer/build.gradle.kts`. **Sin este cambio CloudStream no detecta la actualización.**
+2. Sube el número de `version` en el `build.gradle.kts` del plugin que cambiaste (`M3uPlayer/build.gradle.kts` o `XtreamPlayer/build.gradle.kts`; cada plugin tiene su propia versión). **Sin este cambio CloudStream no detecta la actualización.**
 3. En la terminal: `git add .`, `git commit -m "cambios"`, `git push`.
 4. Espera el ✔ verde en *Actions* y actualiza el plugin desde *Ajustes → Extensiones*.
 
 ### Cambiar el icono
 
-CloudStream carga el icono del plugin desde una **URL pública de imagen** (`iconUrl` en `M3uPlayer/build.gradle.kts`). Lo más cómodo es guardar la imagen en este mismo repositorio:
+CloudStream carga el icono del plugin desde una **URL pública de imagen** (`iconUrl` en el `build.gradle.kts` de cada plugin). Lo más cómodo es guardar la imagen en este mismo repositorio:
 
-1. Reemplaza `icon.png` por tu propio PNG cuadrado (se recomienda 512×512). Conserva el nombre del archivo, o cambia `iconUrl` si lo modificas.
+1. Reemplaza `icon.png` (M3U Player) o `icon-xtream.png` (Xtream Player) por tu propio PNG cuadrado (se recomienda 512×512). Conserva el nombre del archivo, o cambia `iconUrl` si lo modificas.
 2. Sube `version` en uno y guarda los cambios, como en *Actualizar el plugin más adelante*.
 3. Actualiza el plugin en CloudStream. El icono solo cambia tras la actualización, y GitHub puede tardar unos minutos en refrescar la imagen.
 
@@ -210,6 +255,10 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | El repositorio carga pero está vacío | Abre `https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json` en el navegador. Si da 404, el workflow no terminó bien. |
 | El workflow falla con `Could not find com.github.recloudstream...` | JitPack compila esas librerías bajo demanda y la primera petición puede fallar. El workflow ya reintenta solo 3 veces; si aun así falla, en *Actions* pulsa **Re-run all jobs** pasados unos minutos. |
 | El icono nuevo no aparece | Sube `version`, haz push, espera el ✔ verde y actualiza el plugin en CloudStream (o quítalo y vuelve a instalarlo). |
+| Xtream: «Usuario o contraseña incorrectos» | Comprueba servidor, puerto, usuario y contraseña con **Probar conexión**. Copia los datos tal como los da el proveedor (el puerto importa). |
+| Xtream: «El servidor no devolvió datos Xtream válidos» | La dirección o el puerto no son los de la API Xtream, o el proveedor bloquea el cliente. Prueba con otro **User-Agent** (por ejemplo `VLC/3.0.20 LibVLC/3.0.20`). |
+| Xtream: una sección sale vacía o con pocas categorías | Revisa el **Filtro de categorías** y que la cuenta incluya esa sección. |
+| Xtream: la ficha carga pero no reproduce | Revisa en **Probar conexión** las conexiones en uso y el vencimiento (algunos proveedores permiten una sola conexión a la vez). Para canales, prueba la opción de TS, o quítala. |
 | Local: `SDK location not found` | Crea `local.properties` (paso 3 de la opción B) o define la variable `ANDROID_HOME`. |
 | Local: `Could not resolve com.github.recloudstream...` | JitPack compila esas librerías bajo demanda; espera unos minutos y repite el comando. |
 | Local: error de versión de Java | Usa JDK 17 (`java -version`). |
@@ -223,21 +272,42 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uProvider.kt` | El proveedor: inicio por grupos, búsqueda, fichas, series y reproducción |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uSettings.kt` | Diálogo de ajustes y almacenamiento de las listas |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uPlugin.kt` | Punto de entrada del plugin |
-| `M3uPlayer/build.gradle.kts` | Versión, descripción, tipos e icono del plugin |
-| `icon.png` | Icono del plugin (512×512), referenciado por `iconUrl` |
+| `M3uPlayer/build.gradle.kts` | Versión, descripción, tipos e icono de M3U Player |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamJson.kt` | Lectores JSON propios: en flujo (listas enormes) y en árbol (respuestas pequeñas) |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamCore.kt` | Cuentas, filtro de categorías, modelos, interpretación de la API Xtream y referencias (Kotlin puro) |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamClient.kt` | Peticiones a la API Xtream y caché en memoria |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamProvider.kt` | El proveedor: secciones, filas por categoría, búsqueda, fichas, series y reproducción |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamSettings.kt` | Diálogo de ajustes, «Probar conexión» y almacenamiento |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamPlugin.kt` | Punto de entrada de Xtream Player |
+| `XtreamPlayer/build.gradle.kts` | Versión, descripción, tipos e icono de Xtream Player |
+| `icon.png` / `icon-xtream.png` | Iconos de los plugins (512×512), referenciados por `iconUrl` |
 | `.github/workflows/build.yml` | Compilación automática en GitHub Actions |
-| `tests/ParserTest.kt` | Pruebas del parser (se ejecutan en cualquier JVM) |
+| `tests/ParserTest.kt` | Pruebas del parser de M3U (se ejecutan en cualquier JVM) |
+| `tests/XtreamTest.kt` | Pruebas del núcleo de Xtream Player (se ejecutan en cualquier JVM) |
 
-Probar el parser:
+Probar los parsers:
 
 ```
 kotlinc M3uPlayer/src/main/kotlin/recloudstream/M3uParser.kt M3uPlayer/src/main/kotlin/recloudstream/ItemRef.kt tests/ParserTest.kt -include-runtime -d parser-test.jar
 java -jar parser-test.jar
+
+kotlinc XtreamPlayer/src/main/kotlin/recloudstream/XtreamJson.kt XtreamPlayer/src/main/kotlin/recloudstream/XtreamCore.kt tests/XtreamTest.kt -include-runtime -d xtream-test.jar
+java -jar xtream-test.jar
 ```
 
 ## Limitaciones conocidas
+
+**M3U Player**
 
 - Sin soporte DRM (`#KODIPROP:...license_key`), EPG ni catch-up/timeshift.
 - Las series se agrupan solo por el título (no se consultan carátulas ni sinopsis externas); usan el logo de la lista.
 - Los canales con URL sin extensión se reproducen como flujo de bytes (funciona con MPEG-TS, que es lo habitual); si un servidor entrega HLS sin `.m3u8` en la URL, agrega esa extensión o pide el enlace `output=m3u8`.
 - Cambiar las listas no afecta a la fila ya cargada hasta que vuelvas a abrir el proveedor.
+
+**Xtream Player**
+
+- Sin EPG (guía de programación), catch-up/timeshift ni grabaciones.
+- Los datos de cada ficha son los que entrega el panel (no se consulta TMDb); si el panel trae pocos datos, la ficha será sencilla.
+- Los favoritos y el historial dependen de que la cuenta siga configurada con el mismo servidor y usuario.
+- Cada sección activada descarga su catálogo completo al abrir el inicio (se conserva 15 minutos en memoria).
+- Si el proveedor limita las conexiones simultáneas, la reproducción puede cortarse mientras haya otra sesión abierta con la misma cuenta.

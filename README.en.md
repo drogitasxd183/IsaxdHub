@@ -1,12 +1,18 @@
-<p align="center"><img src="icon.png" width="128" alt="M3U Player"></p>
+<p align="center"><img src="icon.png" width="112" alt="M3U Player"> &nbsp; <img src="icon-xtream.png" width="112" alt="Xtream Player"></p>
 <p align="center"><a href="README.md">Español</a> · <b>English</b></p>
 
-# M3U Player — CloudStream plugin
+# M3U Player and Xtream Player — CloudStream plugins
 
-A plugin for [CloudStream](https://github.com/recloudstream/cloudstream) that plays **M3U / M3U8 (IPTV) playlists** from the URLs you configure.
-It ships with no channels and no sources: you bring your own playlist (use it only with content you have the right to watch).
+Two plugins for [CloudStream](https://github.com/recloudstream/cloudstream) in one repository:
 
-## Features
+| Plugin | What it is for |
+|---|---|
+| **M3U Player** | Plays **M3U / M3U8 (IPTV) playlists** from the URLs you configure. |
+| **Xtream Player** | Connects to an **Xtream Codes** account (server, username and password) and separates channels, movies and series. |
+
+Neither includes channels or sources: you bring your own playlist or account (use them only with content you have the right to watch).
+
+## M3U Player — features
 
 - One or several M3U playlists (`http(s)` URL or local file), each with its own name.
 - The home screen shows **one row per group** (`group-title`) with each channel's logo (`tvg-logo`). Search by channel or group name (up to 200 results).
@@ -30,7 +36,7 @@ An entry is treated as an **episode** when both conditions are met:
 The series name is the text **before** the season/episode marker (`Breaking Bad - S02 E10 - Pilot` → series "Breaking Bad", season 2, episode 10, title "Pilot"). All episodes with the same name inside the same playlist form one page, sorted by season and episode.
 If the titles in your playlist have no season and episode, those entries will show up as movies.
 
-## Setup inside CloudStream
+## M3U Player — setup inside CloudStream
 
 1. Open the **M3U Player** provider on the home screen.
 2. Tap the **gear icon** next to the provider name (or *Settings → Extensions → M3U Player → Settings*).
@@ -47,6 +53,45 @@ https://server.example/list.m3u|User-Agent=VLC
 4. Reopen the provider to reload the channels. Playlists are cached in memory for 10 minutes.
 
 > On Android TV, CloudStream does not show the gear icon on the home screen; use the *Settings → Extensions* route instead.
+
+## Xtream Player
+
+Connects to an **Xtream Codes** account (the `player_api.php` format used by many IPTV panels). The panel serves live channels, movies and series separately, so the plugin **knows exactly what each entry is**: it never guesses from names or URLs. It needs no API key (not even a TMDb one): posters, plots and the rest of the data come from the panel itself.
+
+### Features
+
+- **Live TV, Movies and Series** as separate sections (enable only the ones you want), with **one row per category** of the panel.
+- Inside each category, movies and series are listed **newest first**; channels keep the panel's order.
+- **Full detail pages** for movies and series with whatever the panel provides: poster, background image, plot, year, genres, cast, director, duration, rating, trailer and TMDb ID.
+- Series with **seasons and episodes** (title, image, plot and duration of each episode).
+- **Search** across the channels, movies and series of all your accounts; it ignores case and accents.
+- Several accounts at once. If one fails, the others keep working.
+- Live channels over **HLS (m3u8)** when the panel allows it, or **TS**; you can force TS in the settings.
+- Huge catalogues: the lists are read as a stream and only what is needed is kept (in the tests, 200,000 entries in about 2 seconds on a PC). They stay in memory for 15 minutes.
+- The plugin's own texts appear in Spanish or English depending on the phone's language.
+
+### Setup
+
+1. Open the **Xtream Player** provider on the home screen and tap the **gear icon** (or *Settings → Extensions → Xtream Player → Settings*).
+2. Type one account per line, in any of these forms:
+
+```
+My provider | http://server:8080 | username | password
+http://server:8080 | username | password
+http://server:8080/get.php?username=USERNAME&password=PASSWORD&type=m3u_plus
+# lines starting with # are ignored
+```
+
+   The third form is the M3U link providers usually hand out: the plugin extracts the server, username and password from it (it does not download that M3U list; it uses the Xtream API).
+3. Optional settings:
+   - **Sections**: tick only the ones you want to see. Every enabled section downloads its catalogue when the home screen opens.
+   - **Category filter**: words separated by commas; only categories whose name contains one of them are shown (case and accents are ignored), and a leading `-` excludes. Example: `LATINO, ES, -ADULT`. Use it if your panel has hundreds of categories: the home screen shows at most 60 rows per section and 120 items per row (find the rest with the search).
+   - **User-Agent**: some providers only answer certain clients (for example `VLC/3.0.20 LibVLC/3.0.20`).
+   - **Use TS instead of HLS**: for live channels.
+4. Tap **Test connection** to check each account before saving: it shows the status, the expiry date, the connections in use and the allowed output formats.
+5. Tap **Save** and reopen the provider.
+
+How each thing is played: channels with `server/live/username/password/ID.m3u8` (or `.ts`), movies with `server/movie/username/password/ID.extension` and episodes with `server/series/username/password/ID.extension`. Favourites and history store a reference to the account (server and username), not the password.
 
 ---
 
@@ -91,7 +136,7 @@ Unzip the project archive. Go into the folder that directly contains the `build.
    "https://raw.githubusercontent.com/YOUR_USER/cloudstream-m3u/builds/plugins.json"
    ```
 
-2. Open `M3uPlayer/build.gradle.kts` and do the same in the `iconUrl` line (see *Changing the icon* below). Save both files.
+2. Open `M3uPlayer/build.gradle.kts` and `XtreamPlayer/build.gradle.kts` and do the same in the `iconUrl` line of each (see *Changing the icon* below). Save all three files.
 
 ### 5. Upload the project to GitHub
 
@@ -130,24 +175,24 @@ If you get a red ❌, open the run, click the step that failed and copy the erro
 https://raw.githubusercontent.com/YOUR_USER/cloudstream-m3u/main/repo.json
 ```
 
-4. Open the repository you just added, find **M3U Player** and tap the download button. Accept the warning about third-party repositories.
+4. Open the repository you just added and download **M3U Player**, **Xtream Player** or both (each one has its own download button). Accept the warning about third-party repositories.
 
-### 8. Set up your playlists
+### 8. Set up your playlists or your account
 
-Go back to the home screen, pick the **M3U Player** provider, tap the gear icon and paste your playlists (see *Setup inside CloudStream*).
+Go back to the home screen, pick the provider (**M3U Player** or **Xtream Player**), tap the gear icon and fill in the settings (see *M3U Player — setup* and *Xtream Player*).
 
 ### Updating the plugin later
 
 1. Change whatever you want in the code.
-2. Raise the number in `version = 2` in `M3uPlayer/build.gradle.kts`. **Without this change CloudStream does not detect the update.**
+2. Raise the `version` number in the `build.gradle.kts` of the plugin you changed (`M3uPlayer/build.gradle.kts` or `XtreamPlayer/build.gradle.kts`; each plugin has its own version). **Without this change CloudStream does not detect the update.**
 3. In the terminal: `git add .`, `git commit -m "changes"`, `git push`. (On the GitHub website you can also edit a file with the pencil button and commit.)
 4. Wait for the green ✔ in *Actions* and update the plugin from *Settings → Extensions*.
 
 ### Changing the icon
 
-CloudStream loads the plugin icon from a **public image URL** (`iconUrl` in `M3uPlayer/build.gradle.kts`). The easiest way is to keep the image in this repository:
+CloudStream loads the plugin icon from a **public image URL** (`iconUrl` in each plugin's `build.gradle.kts`). The easiest way is to keep the image in this repository:
 
-1. Replace `icon.png` with your own square PNG (512×512 recommended). Keep the file name, or update `iconUrl` if you change it.
+1. Replace `icon.png` (M3U Player) or `icon-xtream.png` (Xtream Player) with your own square PNG (512×512 recommended). Keep the file name, or update `iconUrl` if you change it.
 2. Raise `version` by one and commit, as in *Updating the plugin later*.
 3. Update the plugin in CloudStream. The icon only changes after the update, and GitHub may take a few minutes to refresh the image.
 
@@ -209,6 +254,10 @@ Depending on your Android version, CloudStream may need file-access permission t
 | CloudStream says the repository URL is not valid | The repository must be **public** and the URL must be the `raw.githubusercontent.com/.../main/repo.json` one. Open it in a browser: it must show the JSON. |
 | The repository loads but is empty | Open `https://raw.githubusercontent.com/YOUR_USER/cloudstream-m3u/builds/plugins.json` in a browser. If it returns 404, the workflow did not finish correctly. |
 | The workflow fails with `Could not find com.github.recloudstream...` | JitPack builds those libraries on demand and the first request can fail. The workflow already retries 3 times by itself; if it still fails, click **Re-run all jobs** in *Actions* after a few minutes. |
+| Xtream: "Wrong username or password" | Check the server, port, username and password with **Test connection**. Copy the data exactly as your provider gives it (the port matters). |
+| Xtream: "The server did not return valid Xtream data" | The address or port are not those of the Xtream API, or the provider blocks the client. Try another **User-Agent** (for example `VLC/3.0.20 LibVLC/3.0.20`). |
+| Xtream: a section is empty or has few categories | Check the **Category filter** and that the account includes that section. |
+| Xtream: the detail page loads but it does not play | Check the connections in use and the expiry date with **Test connection** (some providers allow a single simultaneous connection). For channels, try the TS option, or turn it off. |
 | Local: `SDK location not found` | Create `local.properties` (step 3 of option B) or set the `ANDROID_HOME` variable. |
 | Local: `Could not resolve com.github.recloudstream...` | JitPack builds those libraries on demand; wait a few minutes and run the command again. |
 | Local: Java version error | Use JDK 17 (`java -version`). |
@@ -223,21 +272,42 @@ Depending on your Android version, CloudStream may need file-access permission t
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uProvider.kt` | The provider: group-based home page, search, detail pages, series and playback |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uSettings.kt` | Settings dialog and playlist storage |
 | `M3uPlayer/src/main/kotlin/recloudstream/M3uPlugin.kt` | Plugin entry point |
-| `M3uPlayer/build.gradle.kts` | Plugin version, description, types and icon |
-| `icon.png` | Plugin icon (512×512), referenced by `iconUrl` |
+| `M3uPlayer/build.gradle.kts` | M3U Player version, description, types and icon |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamJson.kt` | Own JSON readers: streaming (huge lists) and tree (small responses) |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamCore.kt` | Accounts, category filter, models, Xtream API parsing and references (pure Kotlin) |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamClient.kt` | Xtream API requests and in-memory cache |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamProvider.kt` | The provider: sections, rows per category, search, detail pages, series and playback |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamSettings.kt` | Settings dialog, "Test connection" and storage |
+| `XtreamPlayer/src/main/kotlin/recloudstream/XtreamPlugin.kt` | Xtream Player entry point |
+| `XtreamPlayer/build.gradle.kts` | Xtream Player version, description, types and icon |
+| `icon.png` / `icon-xtream.png` | Plugin icons (512×512), referenced by `iconUrl` |
 | `.github/workflows/build.yml` | Automatic build on GitHub Actions |
-| `tests/ParserTest.kt` | Parser and JSON codec tests (run on any JVM) |
+| `tests/ParserTest.kt` | M3U parser and JSON codec tests (run on any JVM) |
+| `tests/XtreamTest.kt` | Xtream Player core tests (run on any JVM) |
 
-Test the parser:
+Test the parsers:
 
 ```
 kotlinc M3uPlayer/src/main/kotlin/recloudstream/M3uParser.kt M3uPlayer/src/main/kotlin/recloudstream/ItemRef.kt tests/ParserTest.kt -include-runtime -d parser-test.jar
 java -jar parser-test.jar
+
+kotlinc XtreamPlayer/src/main/kotlin/recloudstream/XtreamJson.kt XtreamPlayer/src/main/kotlin/recloudstream/XtreamCore.kt tests/XtreamTest.kt -include-runtime -d xtream-test.jar
+java -jar xtream-test.jar
 ```
 
 ## Known limitations
+
+**M3U Player**
 
 - No DRM (`#KODIPROP:...license_key`), EPG or catch-up/timeshift support.
 - Series are grouped by title only (no external posters or synopses are fetched); they use the logo from the playlist.
 - Channels whose URL has no extension are played as a plain byte stream (it works with MPEG-TS, the usual case); if a server delivers HLS without `.m3u8` in the URL, add that extension or ask for the `output=m3u8` link.
 - Changing the playlists does not affect a row that is already loaded until you reopen the provider.
+
+**Xtream Player**
+
+- No EPG (programme guide), catch-up/timeshift or recordings.
+- The data on each detail page is what the panel provides (TMDb is not queried); if the panel has little data, the page will be simple.
+- Favourites and history depend on the account still being configured with the same server and username.
+- Every enabled section downloads its whole catalogue when the home screen opens (it is kept in memory for 15 minutes).
+- If the provider limits simultaneous connections, playback may be cut while another session is open with the same account.
