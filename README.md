@@ -253,7 +253,7 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | `git push` rechaza el archivo de workflow | El token necesita el permiso `workflow` (ver paso 5). |
 | CloudStream dice que la URL del repositorio no es válida | El repositorio debe ser **público** y la URL debe ser la de `raw.githubusercontent.com/.../main/repo.json`. Ábrela en el navegador: debe mostrar el JSON. |
 | El repositorio carga pero está vacío | Abre `https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json` en el navegador. Si da 404, el workflow no terminó bien. |
-| El workflow falla con `Could not find com.github.recloudstream...` | JitPack compila esas librerías bajo demanda y la primera petición puede fallar. El workflow ya reintenta solo 3 veces; si aun así falla, en *Actions* pulsa **Re-run all jobs** pasados unos minutos. |
+| El workflow falla con `Could not find com.github.recloudstream...` | JitPack compila esas librerías bajo demanda y la primera petición puede fallar. El workflow ya reintenta solo 4 veces (con 2 minutos de pausa); si aun así falla, en *Actions* pulsa **Re-run all jobs** pasados unos minutos. |
 | El icono nuevo no aparece | Sube `version`, haz push, espera el ✔ verde y actualiza el plugin en CloudStream (o quítalo y vuelve a instalarlo). |
 | Xtream: «Usuario o contraseña incorrectos» | Comprueba servidor, puerto, usuario y contraseña con **Probar conexión**. Copia los datos tal como los da el proveedor (el puerto importa). |
 | Xtream: «El servidor no devolvió datos Xtream válidos» | La dirección o el puerto no son los de la API Xtream, o el proveedor bloquea el cliente. Prueba con otro **User-Agent** (por ejemplo `VLC/3.0.20 LibVLC/3.0.20`). |
