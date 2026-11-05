@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.lagradost.cloudstream3.USER_AGENT
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -277,7 +278,8 @@ private fun fetchUserInfo(account: XtreamAccount, userAgent: String): XtreamUser
     try {
         connection.connectTimeout = 15_000
         connection.readTimeout = 20_000
-        if (userAgent.isNotBlank()) connection.setRequestProperty("User-Agent", userAgent.trim())
+        // Same User-Agent the plugin sends when loading the catalogues, so the test says what the real use will say.
+        connection.setRequestProperty("User-Agent", userAgent.trim().ifEmpty { USER_AGENT })
         val code = connection.responseCode
         check(code in 200..299) { "HTTP $code" }
 
