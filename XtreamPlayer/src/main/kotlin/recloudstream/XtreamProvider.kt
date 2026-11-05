@@ -443,12 +443,12 @@ class XtreamProvider(private val store: XtreamStore) : MainAPI() {
     }
 
     private fun setupHelp(): String = tr(
-        "Abre los ajustes de este plugin y escribe tu servidor, usuario y contraseña Xtream (o el enlace M3U de tu proveedor).\n\n" +
+        "Abre los ajustes de este plugin y rellena el servidor, el usuario y la contraseña de tu lista Xtream (con «Añadir otra lista» puedes agregar más).\n\n" +
             "• En el inicio: toca el icono de engranaje junto al nombre del proveedor.\n" +
             "• O bien: Ajustes → Extensiones → Xtream Player → Ajustes.\n\n" +
             "Revisa también que al menos una sección (TV en vivo, Películas o Series) esté activada. " +
             "Después vuelve a abrir este proveedor.",
-        "Open this plugin's settings and enter your Xtream server, username and password (or your provider's M3U link).\n\n" +
+        "Open this plugin's settings and fill in the server, username and password of your Xtream list (use \"Add another list\" for more).\n\n" +
             "• On the home screen: tap the gear icon next to the provider name.\n" +
             "• Or: Settings → Extensions → Xtream Player → Settings.\n\n" +
             "Also make sure at least one section (Live TV, Movies or Series) is enabled. " +

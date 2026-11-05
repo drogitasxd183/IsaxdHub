@@ -73,23 +73,18 @@ Se conecta a una cuenta **Xtream Codes** (el formato `player_api.php` que usan m
 ### Configuración
 
 1. Abre el proveedor **Xtream Player** en el inicio y toca el **engranaje** (o *Ajustes → Extensiones → Xtream Player → Ajustes*).
-2. Escribe una cuenta por línea, en cualquiera de estas formas:
-
-```
-Mi proveedor | http://servidor:8080 | usuario | contraseña
-http://servidor:8080 | usuario | contraseña
-http://servidor:8080/get.php?username=USUARIO&password=CLAVE&type=m3u_plus
-# las líneas que empiezan con # se ignoran
-```
-
-   La tercera forma es el enlace M3U que suele dar el proveedor: el plugin extrae de él el servidor, el usuario y la contraseña (no descarga esa lista M3U; usa la API Xtream).
-3. Ajustes opcionales:
+2. Rellena las tres casillas de tu lista: **Servidor** (por ejemplo `http://servidor:8080`), **Usuario** y **Contraseña**.
+3. ¿Tienes más de una lista? Pulsa **+ Añadir otra lista**: aparece otro grupo con sus tres casillas y, debajo, el botón vuelve a estar para añadir otra, tantas veces como quieras. Cada grupo tiene su botón **Eliminar**.
+   - Si tu proveedor te dio un enlace M3U (`http://servidor:8080/get.php?username=USUARIO&password=CLAVE&type=m3u_plus`), pégalo entero en la casilla del servidor y deja usuario y contraseña vacíos: el plugin los toma del enlace (no descarga esa lista M3U; usa la API Xtream).
+   - Las contraseñas se ven como puntos; marca **Mostrar contraseñas** para comprobarlas.
+   - Si ya usabas la versión anterior (una cuenta por línea), tus cuentas aparecen solas en el formulario.
+4. Ajustes opcionales:
    - **Secciones**: marca solo las que quieras ver. Cada sección activada descarga su catálogo al abrir el inicio.
    - **Filtro de categorías**: palabras separadas por coma; solo se muestran las categorías cuyo nombre contenga alguna (ignora mayúsculas y acentos), y con `-` se excluyen. Ejemplo: `LATINO, ES, -ADULTOS`. Úsalo si tu panel tiene cientos de categorías: el inicio muestra como máximo 60 filas por sección y 120 elementos por fila (el resto se encuentra con el buscador).
    - **User-Agent**: algunos proveedores solo responden a ciertos clientes (por ejemplo `VLC/3.0.20 LibVLC/3.0.20`).
    - **Usar TS en vez de HLS**: para los canales en vivo.
-4. Pulsa **Probar conexión** para comprobar cada cuenta antes de guardar: muestra el estado, la fecha de vencimiento, las conexiones en uso y los formatos de salida permitidos.
-5. Pulsa **Guardar** y vuelve a abrir el proveedor.
+5. Pulsa **Probar conexión** para comprobar cada lista antes de guardar: muestra el estado, la fecha de vencimiento, las conexiones en uso y los formatos de salida permitidos.
+6. Pulsa **Guardar** y vuelve a abrir el proveedor. Las listas a medio rellenar (sin servidor, usuario o contraseña) se conservan pero no se usan, y el aviso te dice cuántas son.
 
 Cómo se reproduce cada cosa: los canales con `servidor/live/usuario/clave/ID.m3u8` (o `.ts`), las películas con `servidor/movie/usuario/clave/ID.extensión` y los episodios con `servidor/series/usuario/clave/ID.extensión`. Los favoritos y el historial guardan una referencia a la cuenta (servidor y usuario), no la contraseña.
 
@@ -257,7 +252,7 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | El icono nuevo no aparece | Sube `version`, haz push, espera el ✔ verde y actualiza el plugin en CloudStream (o quítalo y vuelve a instalarlo). |
 | Xtream: «Usuario o contraseña incorrectos» | Comprueba servidor, puerto, usuario y contraseña con **Probar conexión**. Copia los datos tal como los da el proveedor (el puerto importa). |
 | Xtream: «El servidor no devolvió datos Xtream válidos» | La dirección o el puerto no son los de la API Xtream, o el proveedor bloquea el cliente. Prueba con otro **User-Agent** (por ejemplo `VLC/3.0.20 LibVLC/3.0.20`). |
-| Xtream: una sección sale vacía o con pocas categorías | Revisa el **Filtro de categorías** y que la cuenta incluya esa sección. |
+| Xtream: una sección sale vacía o con pocas categorías | Revisa el **Filtro de categorías** y que la lista incluya esa sección. |
 | Xtream: la ficha carga pero no reproduce | Revisa en **Probar conexión** las conexiones en uso y el vencimiento (algunos proveedores permiten una sola conexión a la vez). Para canales, prueba la opción de TS, o quítala. |
 | Local: `SDK location not found` | Crea `local.properties` (paso 3 de la opción B) o define la variable `ANDROID_HOME`. |
 | Local: `Could not resolve com.github.recloudstream...` | JitPack compila esas librerías bajo demanda; espera unos minutos y repite el comando. |

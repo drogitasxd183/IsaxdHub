@@ -120,6 +120,9 @@ object XtreamAccounts {
         return XtreamAccount(name?.takeIf { it.isNotBlank() } ?: hostOf(base), base, user, pass)
     }
 
+    /** Credentials taken from a provider link (`...?username=U&password=P` or `http://U:P@host`); null for a plain address. */
+    fun fromLink(text: String): XtreamAccount? = fromUrl(text, null)
+
     /** Credentials taken from a provider link: `...?username=U&password=P` or `http://U:P@host`. */
     private fun fromUrl(urlText: String, name: String?): XtreamAccount? {
         var text = urlText.trim()
@@ -171,6 +174,119 @@ object XtreamAccounts {
     fun hostOf(url: String): String {
         val authority = url.substringAfter("://", url).substringBefore('/')
         return authority.substringAfterLast('@').substringBefore(':')
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+// Account forms: what the settings screen edits
+// -------------------------------------------------------------------------------------------------
+
+/**
+ * One list as typed in the settings screen: three boxes. [name] is not shown anywhere: it only keeps the name given
+ * to an account by the first version of the plugin (one account per text line), so nothing is lost when upgrading.
+ */
+data class XtreamAccountForm(
+    val server: String = "",
+    val username: String = "",
+    val password: String = "",
+    val name: String = "",
+) {
+    val isBlank: Boolean get() = server.isBlank() && username.isBlank() && password.isBlank()
+}
+
+/** The accounts that can be used, and how many filled-in forms were ignored for lacking a server, user or password. */
+class XtreamConversion(val accounts: List<XtreamAccount>, val ignored: Int)
+
+object XtreamAccountForms {
+
+    /** Compact JSON array, written and read by our own code (no reflection involved). */
+    fun encode(forms: List<XtreamAccountForm>): String {
+        val sb = StringBuilder("[")
+        forms.forEachIndexed { index, form ->
+            if (index > 0) sb.append(',')
+            sb.append("{\"server\":")
+            appendString(sb, form.server)
+            field(sb, "user", form.username)
+            field(sb, "pass", form.password)
+            if (form.name.isNotEmpty()) field(sb, "name", form.name)
+            sb.append('}')
+        }
+        return sb.append(']').toString()
+    }
+
+    /** Reads what [encode] wrote, or the one-account-per-line text saved by the first version of the plugin. */
+    fun decode(stored: String): List<XtreamAccountForm> {
+        val text = stored.trim()
+        if (text.startsWith("[")) {
+            try {
+                val list = XtreamJson.parseTree(text) as? List<*>
+                if (list != null) {
+                    return list.mapNotNull { entry ->
+                        val map = entry as? Map<*, *> ?: return@mapNotNull null
+                        XtreamAccountForm(
+                            server = map["server"] as? String ?: "",
+                            username = map["user"] as? String ?: "",
+                            password = map["pass"] as? String ?: "",
+                            name = map["name"] as? String ?: "",
+                        )
+                    }
+                }
+            } catch (_: Exception) {
+                // not JSON (an old line such as "[ES] Provider | http://..."): read it as text below
+            }
+        }
+        return XtreamAccounts.parse(stored).map { XtreamAccountForm(it.baseUrl, it.username, it.password, it.name) }
+    }
+
+    /**
+     * Turns the forms into usable accounts. Spaces around the boxes are ignored, empty forms are skipped, forms with a
+     * missing part are counted in [XtreamConversion.ignored], and the same server + user twice is kept once.
+     *
+     * A provider link pasted in the server box (`http://host:8080/get.php?username=U&password=P`) fills the user and
+     * password boxes when they are empty, so people can paste the link they were given and be done.
+     */
+    fun convert(forms: List<XtreamAccountForm>): XtreamConversion {
+        val accounts = ArrayList<XtreamAccount>()
+        var ignored = 0
+        for (form in forms) {
+            if (form.isBlank) continue
+            val account = toAccount(form)
+            if (account == null) {
+                ignored++
+            } else if (accounts.none { it.key == account.key }) {
+                accounts.add(account)
+            }
+        }
+        return XtreamConversion(uniqueNames(accounts), ignored)
+    }
+
+    private fun toAccount(form: XtreamAccountForm): XtreamAccount? {
+        val server = form.server.trim()
+        var user = form.username.trim()
+        var pass = form.password.trim()
+
+        val fromLink = XtreamAccounts.fromLink(server)
+        if (fromLink != null) {
+            if (user.isEmpty()) user = fromLink.username
+            if (pass.isEmpty()) pass = fromLink.password
+        }
+        if (user.isEmpty() || pass.isEmpty()) return null
+
+        val base = fromLink?.baseUrl ?: XtreamAccounts.baseUrl(server) ?: return null
+        return XtreamAccount(form.name.trim().ifEmpty { XtreamAccounts.hostOf(base) }, base, user, pass)
+    }
+
+    /** Two lists on the same host get "host (user)"; any name still repeated gets a number. */
+    private fun uniqueNames(accounts: List<XtreamAccount>): List<XtreamAccount> {
+        val counts = accounts.groupingBy { it.name }.eachCount()
+        val used = HashSet<String>()
+        return accounts.map { account ->
+            val base = if ((counts[account.name] ?: 0) > 1) "${account.name} (${account.username})" else account.name
+            var candidate = base
+            var number = 2
+            while (!used.add(candidate)) candidate = "$base (${number++})"
+            if (candidate == account.name) account else account.copy(name = candidate)
+        }
     }
 }
 

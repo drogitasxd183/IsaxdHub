@@ -1,5 +1,5 @@
 // Use an integer for version numbers
-version = 1
+version = 2
 
 dependencies {
     // The Android-side classes (Plugin, Context helpers...) are not part of the "library" artifact.
