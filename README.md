@@ -1,9 +1,9 @@
 <p align="center"><img src="icon.png" width="112" alt="M3U Player"> &nbsp; <img src="icon-xtream.png" width="112" alt="Xtream Player"></p>
 <p align="center"><b>Español</b> · <a href="README.en.md">English</a></p>
 
-# M3U Player y Xtream Player — plugins de CloudStream
+# IsaxdHub — plugins de CloudStream
 
-Dos plugins para [CloudStream](https://github.com/recloudstream/cloudstream) en un mismo repositorio:
+Repositorio de plugins para [CloudStream](https://github.com/recloudstream/cloudstream). Por ahora incluye dos, y irán llegando más:
 
 | Plugin | Para qué sirve |
 |---|---|
@@ -114,21 +114,21 @@ git --version
 
 1. Entra en <https://github.com> e inicia sesión (o crea una cuenta gratis).
 2. Arriba a la derecha pulsa **+ → New repository**.
-3. *Repository name*: `cloudstream-m3u` (puede ser otro nombre).
+3. *Repository name*: `IsaxdHub` (puede ser otro nombre).
 4. Marca **Public** (CloudStream necesita poder leer los archivos sin iniciar sesión).
 5. **No** marques *Add a README*, *.gitignore* ni *license*. Pulsa **Create repository**.
-6. Anota la dirección: `https://github.com/TU_USUARIO/cloudstream-m3u`.
+6. Anota la dirección: `https://github.com/TU_USUARIO/IsaxdHub`.
 
 ### 3. Descomprime el proyecto
 
-Descomprime `cloudstream-m3u-player.zip`. Entra hasta la carpeta que contiene directamente el archivo `build.gradle.kts` (si al descomprimir se creó una carpeta dentro de otra, es la de más adentro).
+Descomprime el zip del proyecto. Entra hasta la carpeta que contiene directamente el archivo `build.gradle.kts` (si al descomprimir se creó una carpeta dentro de otra, es la de más adentro).
 
 ### 4. Edita `repo.json` y `iconUrl`
 
 1. Abre `repo.json` con el Bloc de notas y reemplaza **`YOUR_USER/YOUR_REPO`** por tu usuario y repositorio. Ejemplo:
 
    ```json
-   "https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json"
+   "https://raw.githubusercontent.com/TU_USUARIO/IsaxdHub/builds/plugins.json"
    ```
 
 2. Abre `M3uPlayer/build.gradle.kts` y `XtreamPlayer/build.gradle.kts` y haz lo mismo en la línea `iconUrl` de cada uno (ver *Cambiar el icono* más abajo). Guarda los tres archivos.
@@ -144,7 +144,7 @@ git config --global user.email "tu-correo@ejemplo.com"
 git init -b main
 git add .
 git commit -m "M3U Player plugin"
-git remote add origin https://github.com/TU_USUARIO/cloudstream-m3u.git
+git remote add origin https://github.com/TU_USUARIO/IsaxdHub.git
 git push -u origin main
 ```
 
@@ -167,7 +167,7 @@ Si sale una ❌ roja, abre la ejecución, pulsa el paso que falló y copia el me
 3. *Nombre*: `M3U Player`. *URL*:
 
 ```
-https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/main/repo.json
+https://raw.githubusercontent.com/TU_USUARIO/IsaxdHub/main/repo.json
 ```
 
 4. Abre el repositorio recién agregado y descarga **M3U Player**, **Xtream Player** o ambos (cada uno tiene su botón de descarga). Acepta el aviso sobre repositorios de terceros.
@@ -247,7 +247,7 @@ Según tu versión de Android, CloudStream puede necesitar permiso de acceso a a
 | El workflow falla en *Push builds* con error 403 | *Settings → Actions → General → Workflow permissions* → **Read and write permissions** → *Save*, y vuelve a ejecutarlo. |
 | `git push` rechaza el archivo de workflow | El token necesita el permiso `workflow` (ver paso 5). |
 | CloudStream dice que la URL del repositorio no es válida | El repositorio debe ser **público** y la URL debe ser la de `raw.githubusercontent.com/.../main/repo.json`. Ábrela en el navegador: debe mostrar el JSON. |
-| El repositorio carga pero está vacío | Abre `https://raw.githubusercontent.com/TU_USUARIO/cloudstream-m3u/builds/plugins.json` en el navegador. Si da 404, el workflow no terminó bien. |
+| El repositorio carga pero está vacío | Abre `https://raw.githubusercontent.com/TU_USUARIO/IsaxdHub/builds/plugins.json` en el navegador. Si da 404, el workflow no terminó bien. |
 | El workflow falla con `Could not find com.github.recloudstream...` | JitPack compila esas librerías bajo demanda y la primera petición puede fallar. El workflow ya reintenta solo 4 veces (con 2 minutos de pausa); si aun así falla, en *Actions* pulsa **Re-run all jobs** pasados unos minutos. |
 | El icono nuevo no aparece | Sube `version`, haz push, espera el ✔ verde y actualiza el plugin en CloudStream (o quítalo y vuelve a instalarlo). |
 | Xtream: «Usuario o contraseña incorrectos» | Comprueba servidor, puerto, usuario y contraseña con **Probar conexión**. Copia los datos tal como los da el proveedor (el puerto importa). |

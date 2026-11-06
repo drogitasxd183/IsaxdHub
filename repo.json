@@ -1,8 +1,8 @@
 {
-    "name": "M3U & Xtream Players",
-    "description": "M3U / M3U8 playlist player and Xtream Codes player plugins for CloudStream",
+    "name": "IsaxdHub",
+    "description": "CloudStream plugins: M3U Player, Xtream Player and more to come",
     "manifestVersion": 1,
     "pluginLists": [
-        "https://raw.githubusercontent.com/drogitasxd183/cloudstream-m3u/builds/plugins.json"
+        "https://raw.githubusercontent.com/drogitasxd183/IsaxdHub/builds/plugins.json"
     ]
 }

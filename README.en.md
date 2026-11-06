@@ -1,9 +1,9 @@
 <p align="center"><img src="icon.png" width="112" alt="M3U Player"> &nbsp; <img src="icon-xtream.png" width="112" alt="Xtream Player"></p>
 <p align="center"><a href="README.md">Español</a> · <b>English</b></p>
 
-# M3U Player and Xtream Player — CloudStream plugins
+# IsaxdHub — CloudStream plugins
 
-Two plugins for [CloudStream](https://github.com/recloudstream/cloudstream) in one repository:
+A repository of plugins for [CloudStream](https://github.com/recloudstream/cloudstream). For now it has two, and more will come:
 
 | Plugin | What it is for |
 |---|---|
@@ -114,10 +114,10 @@ git --version
 
 1. Go to <https://github.com> and sign in (or create a free account).
 2. Click **+ → New repository** (top right).
-3. *Repository name*: `cloudstream-m3u` (any name works).
+3. *Repository name*: `IsaxdHub` (any name works).
 4. Select **Public** (CloudStream must be able to read the files without signing in).
 5. Do **not** tick *Add a README*, *.gitignore* or *license*. Click **Create repository**.
-6. Note the address: `https://github.com/YOUR_USER/cloudstream-m3u`.
+6. Note the address: `https://github.com/YOUR_USER/IsaxdHub`.
 
 ### 3. Unzip the project
 
@@ -128,7 +128,7 @@ Unzip the project archive. Go into the folder that directly contains the `build.
 1. Open `repo.json` with a text editor and replace **`YOUR_USER/YOUR_REPO`** with your user and repository. Example:
 
    ```json
-   "https://raw.githubusercontent.com/YOUR_USER/cloudstream-m3u/builds/plugins.json"
+   "https://raw.githubusercontent.com/YOUR_USER/IsaxdHub/builds/plugins.json"
    ```
 
 2. Open `M3uPlayer/build.gradle.kts` and `XtreamPlayer/build.gradle.kts` and do the same in the `iconUrl` line of each (see *Changing the icon* below). Save all three files.
@@ -144,7 +144,7 @@ git config --global user.email "your-email@example.com"
 git init -b main
 git add .
 git commit -m "M3U Player plugin"
-git remote add origin https://github.com/YOUR_USER/cloudstream-m3u.git
+git remote add origin https://github.com/YOUR_USER/IsaxdHub.git
 git push -u origin main
 ```
 
@@ -167,7 +167,7 @@ If you get a red ❌, open the run, click the step that failed and copy the erro
 3. *Name*: `M3U Player`. *URL*:
 
 ```
-https://raw.githubusercontent.com/YOUR_USER/cloudstream-m3u/main/repo.json
+https://raw.githubusercontent.com/YOUR_USER/IsaxdHub/main/repo.json
 ```
 
 4. Open the repository you just added and download **M3U Player**, **Xtream Player** or both (each one has its own download button). Accept the warning about third-party repositories.
@@ -247,7 +247,7 @@ Depending on your Android version, CloudStream may need file-access permission t
 | The workflow fails at *Push builds* with a 403 error | *Settings → Actions → General → Workflow permissions* → **Read and write permissions** → *Save*, then run it again. |
 | `git push` rejects the workflow file | The token needs the `workflow` permission (see step 5). |
 | CloudStream says the repository URL is not valid | The repository must be **public** and the URL must be the `raw.githubusercontent.com/.../main/repo.json` one. Open it in a browser: it must show the JSON. |
-| The repository loads but is empty | Open `https://raw.githubusercontent.com/YOUR_USER/cloudstream-m3u/builds/plugins.json` in a browser. If it returns 404, the workflow did not finish correctly. |
+| The repository loads but is empty | Open `https://raw.githubusercontent.com/YOUR_USER/IsaxdHub/builds/plugins.json` in a browser. If it returns 404, the workflow did not finish correctly. |
 | The workflow fails with `Could not find com.github.recloudstream...` | JitPack builds those libraries on demand and the first request can fail. The workflow already retries 4 times by itself (2 minutes apart); if it still fails, click **Re-run all jobs** in *Actions* after a few minutes. |
 | Xtream: "Wrong username or password" | Check the server, port, username and password with **Test connection**. Copy the data exactly as your provider gives it (the port matters). |
 | Xtream: "The server did not return valid Xtream data" | The address or port are not those of the Xtream API, or the provider blocks the client. Try another **User-Agent** (for example `VLC/3.0.20 LibVLC/3.0.20`). |

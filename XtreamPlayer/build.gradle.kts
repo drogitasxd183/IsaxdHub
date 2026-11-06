@@ -24,7 +24,7 @@ cloudstream {
     tvTypes = listOf("Live", "Movie", "TvSeries")
 
     // Shown in CloudStream's extensions list. It must be a public image URL: the file lives in this repository.
-    iconUrl = "https://raw.githubusercontent.com/drogitasxd183/cloudstream-m3u/main/icon-xtream.png"
+    iconUrl = "https://raw.githubusercontent.com/drogitasxd183/IsaxdHub/main/icon-xtream.png"
 
     // Uses android.* classes (settings dialog), so it cannot be a cross-platform plugin.
     isCrossPlatform = false
